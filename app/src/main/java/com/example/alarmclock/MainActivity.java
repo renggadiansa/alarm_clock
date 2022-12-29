@@ -6,6 +6,7 @@ import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -46,10 +47,10 @@ public class MainActivity extends AppCompatActivity {
                 timePicker.addOnPositiveButtonClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if(timePicker.getHour() >= 12){
-                            binding.selectTime.setText("Alarm set for: " + timePicker.getHour() + ":" + timePicker.getMinute() + " PM");
+                        if(timePicker.getHour() > 12){
+                            binding.selectTime.setText(String.format("%02d",(timePicker.getHour()-12)) +":"+ String.format("%02d", timePicker.getMinute())+"PM");
                         } else {
-                            binding.selectTime.setText("Alarm set for: " + timePicker.getHour() + ":" + timePicker.getMinute() + " AM");
+                            binding.selectTime.setText(timePicker.getHour()+":" + timePicker.getMinute()+ "AM");
                         }
                         calendar = Calendar.getInstance();
                         calendar.set(Calendar.HOUR_OF_DAY, timePicker.getHour());
@@ -63,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         binding.setAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+                alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
                 Intent intent = new Intent(MainActivity.this, AlarmReceiver.class);
                 pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, intent, 0);
                 alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
@@ -78,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
                 pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, intent, 0);
 
                 if (alarmManager == null) {
-                    alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+                    alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
                 }
                 alarmManager.cancel(pendingIntent);
                 Toast.makeText(MainActivity.this, "Alarm Cancel", Toast.LENGTH_SHORT).show();
